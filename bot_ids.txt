@@ -1,0 +1,16 @@
+google-googlebot
+google-special-crawlers
+google-user-triggered-fetchers
+google-user-triggered-fetchers-google
+bing-bingbot
+openai-searchbot
+openai-chatgpt-user
+# Block openai-gptbot
+apple-applebot
+# Block perplexity-perplexitybot
+perplexity-user
+naver-naverbot
+# Block mistral-user-ips
+duckduckgo-duckduckbot
+duckduckgo-duckassistbot
+commoncrawl-ccbot
