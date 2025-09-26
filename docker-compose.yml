@@ -8,4 +8,4 @@ services:
     volumes:
       - .:/app                # mount your current dir (script + bot_ids.txt + manual_allow.txt)
       - ./whitelisted_ips.txt:/opt/whitelisted_ips  # mount output file
-    command: python build_list.py
+    command: sh -c "pip install requests && python build_list.py"

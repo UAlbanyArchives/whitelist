@@ -12,5 +12,5 @@ Comment out bots to block in `bot_ids.txt`.
 ## Run in Docker
 
 ```
-docker-compose run --rm ip_whitelist_builder
+docker compose run --rm ip_whitelist_builder
 ```
