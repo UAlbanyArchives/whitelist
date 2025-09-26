@@ -1,9 +1,14 @@
 import requests
+import ipaddress
+import os
 
 STATUS_URL = "https://search-engine-ip-tracker.merj.com/status"
 BOT_IDS_FILE = "bot_ids.txt"
 ALLOWED_IPS_FILE = "manual_allow.txt"
-OUTPUT_WHITELIST_FILE = "whitelisted_ips.txt"
+if os.name == "nt":
+    OUTPUT_WHITELIST_FILE = "whitelisted_ips.txt"
+else:
+    OUTPUT_WHITELIST_FILE = "/opt/whitelisted_ips"
 
 def fetch_status_json():
     r = requests.get(STATUS_URL)
@@ -21,6 +26,10 @@ def read_allowed_ips():
             return [line.strip() for line in f if line.strip() and not line.strip().startswith("#")]
     except FileNotFoundError:
         return []
+
+def expand_cidr_to_ips(cidr):
+    """Return a list of individual IP strings for a given CIDR."""
+    return [str(ip) for ip in ipaddress.IPv4Network(cidr)]
 
 def build_whitelist():
     # Load filtered bot IDs
@@ -63,24 +72,22 @@ def build_whitelist():
     allowed_ips = read_allowed_ips()
 
     with open(OUTPUT_WHITELIST_FILE, "w") as f:
-        #f.write("# Auto-generated whitelist - do not edit manually\n\n")
-
         # Write static IPs from allowed.txt
+        for ip in allowed_ips:
+            f.write(f"{ip} ALLOW\n")
         if allowed_ips:
-            #f.write("# Static IPs from allowed.txt\n")
-            for ip in allowed_ips:
-                f.write(f"{ip} ALLOW\n")
             f.write("\n")
 
-        # Write dynamic IPs grouped by bot (only ipv4)
+        # Write dynamic IPs expanded from CIDRs
+        total_ips = len(allowed_ips)
         for bot_id, prefixes in bot_prefixes.items():
-            #f.write(f"# {bot_id}\n")
-            for prefix in prefixes:
-                f.write(f"{prefix} ALLOW\n")
+            for cidr in prefixes:
+                for ip in expand_cidr_to_ips(cidr):
+                    f.write(f"{ip} ALLOW\n")
+                    total_ips += 1
             f.write("\n")
 
-    total_prefixes = sum(len(p) for p in bot_prefixes.values()) + len(allowed_ips)
-    print(f"Wrote {total_prefixes} IPv4 prefixes to {OUTPUT_WHITELIST_FILE}")
+    print(f"Wrote {total_ips} individual IPv4 addresses to {OUTPUT_WHITELIST_FILE}")
 
 if __name__ == "__main__":
     build_whitelist()
