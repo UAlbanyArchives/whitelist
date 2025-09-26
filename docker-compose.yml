@@ -2,10 +2,9 @@ version: "3.8"
 
 services:
   ip_whitelist_builder:
-    image: python:3.11-slim   # modern Python with SSL working
+    image: python:3.11-slim
     container_name: ip_whitelist_builder
     working_dir: /app
     volumes:
-      - .:/app                # mount your current dir (script + bot_ids.txt + manual_allow.txt)
-      - ./whitelisted_ips.txt:/opt/whitelisted_ips  # mount output file
+      - .:/app
     command: sh -c "pip install requests && python build_list.py"

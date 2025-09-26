@@ -1,14 +1,10 @@
 import requests
 import ipaddress
-import os
 
 STATUS_URL = "https://search-engine-ip-tracker.merj.com/status"
 BOT_IDS_FILE = "bot_ids.txt"
 ALLOWED_IPS_FILE = "manual_allow.txt"
-if os.name == "nt":
-    OUTPUT_WHITELIST_FILE = "whitelisted_ips.txt"
-else:
-    OUTPUT_WHITELIST_FILE = "/opt/whitelisted_ips"
+OUTPUT_WHITELIST_FILE = "whitelisted_ips"
 
 def fetch_status_json():
     r = requests.get(STATUS_URL)
